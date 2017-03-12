@@ -40,7 +40,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section data-markdown="slides.md"
-					data-separator-vertical="^\r?\n===\r?\n$"></section>
+					data-separator-vertical="^\r?\n===\r?\n$">
+				</section>
 
 
 				<section>
@@ -393,8 +394,9 @@ Reveal.addEventListener( 'customevent', function() {
 				progress: true,
 				history: true,
 				center: true,
+				previewLinks: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
