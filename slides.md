@@ -20,6 +20,13 @@ This is to me
 - Different things to different people
 - Cause of arguments
 
+===
+
+# Basic Intro to REST
+
+- Resources and collections
+- Always plural
+
 ---
 
 # Basic Intro to REST
@@ -69,7 +76,7 @@ This is to me
 
 ===
 
-- discoverability: https://vimeo.com/20781278
+- Discoverability: https://vimeo.com/20781278
 
 ---
 
@@ -79,30 +86,188 @@ This is to me
 
 ## It's a Spec
 
+- Formally OpenAPI - [schema here](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#openapi-specification)
+- Version 2 is current, version 3 was supposed to come out end Feb
+- Specifies how to document your JSON API with a JSON schema
+- We'll see one shortly.
+
 ===
 
 ## It's a UI
 
----
-
-# Writing a SwaggerUI Server
-
-===
-
-- Standard seems to be to generate from a spec
-- Easier for me to write server and have server give the spec
-- https://github.com/zalando/connexion seems to do it the other way if you prefer
-
-===
-
-- Use Flask-RESTPlus
-- Easy to test: http://flask.pocoo.org/docs/0.11/testing/#the-testing-skeleton
+- SwaggerUI
+- Standard demo is [here](http://petstore.swagger.io/) *MAYBE SKIP*
+- Lets you try out an API in your browser
 
 ---
 
 # DEMO
 
-http://127.0.0.1:5000
+- Simple Datastore
+- Exposes SwaggerUI
+
+http://127.0.0.1:9000
+
+https://github.com/olipratt/microstore
+
+===
+
+<iframe style="background: #FFFFFF; width: 100%; height: 70vh;"
+        src="http://127.0.0.1:9000">
+</iframe>
+
+---
+
+## Setup
+
+```python
+from flask import Flask, request
+from flask_restplus import Resource, Api, fields
+
+app = Flask(__name__)
+
+api = Api(app,
+          version='1.0',
+          title='Simple Datastore API',
+          description='A simple REST datastore API',
+          prefix='/api')
+
+# This collects the API operations into named groups under a root URL.
+apps_ns = api.namespace('apps', description='App data related operations')
+schema_ns = api.namespace('schema', description="This API's schema operations")
+```
+
+<iframe style="background: #FFFFFF; width: 100%; min-height: 15vh;"
+        src="http://127.0.0.1:9000">
+</iframe>
+
+
+
+Note:
+- Flask stuff is standard for flask app
+- The point is that everything you see is configured by you in the code.
+
+===
+
+## Simple Get
+
+```
+schema_ns = api.namespace('schema',
+                          description="This API's schema operations")
+
+@schema_ns.route('')
+class SchemaResource(Resource):
+    """Resource allowing access to the
+       OpenAPI schema for the entire API."""
+
+    def get(self):
+        """
+        Return the OpenAPI schema.
+        """
+        return api.__schema__
+```
+
+<iframe style="background: #FFFFFF; width: 100%; height: 20vh;"
+        src="http://127.0.0.1:9000">
+</iframe>
+
+===
+
+## Collection
+
+```
+@apps_ns.route('')
+class AppsCollection(Resource):
+    """ Collection resource containing all apps. """
+
+    @api.marshal_list_with(AppName)
+    def get(self):
+        """
+        Returns the list of apps.
+        """
+        log.debug("Listing all apps")
+        apps_list = kvstore.keys(KVSTORE_NAMESPACE_APPS)
+        return [{'name': app_name} for app_name in apps_list]
+```
+
+===
+
+## PUT
+
+```python
+@apps_ns.route('/<appid>')
+@api.response(404, 'App not found.')
+class AppsResource(Resource):
+    """ Individual resources representing an app. """
+
+    @api.expect(AppData, validate=True)
+    @api.response(204, 'App successfully updated.')
+    def put(self, appid):
+        """
+        Updates an app.
+        Use this method to add, or change the data stored for, an app.
+        * Send a JSON object with the new data in the request body.
+        `` `
+        {
+          "data": {
+            "any_data": "you_like_here"
+          }
+        }
+        `` `
+        * Specify the name of the app to modify in the request URL path.
+        """
+        kvstore.store(KVSTORE_NAMESPACE_APPS,
+                      appid,
+                      request.get_json()['data'])
+        return None, 204
+```
+
+===
+
+## Models
+
+```python
+# Specifications of the objects accepted/returned by the API.
+AppName = api.model('App name', {
+    'name': fields.String(required=True,
+                          description='App name',
+                          example="My App"),
+})
+
+AppData = api.model('App data', {
+    'data': fields.Raw(required=True,
+                       description='App data',
+                       example={"any_data": "you_like_goes_here"}),
+})
+
+AppWithData = api.inherit('App with data', AppName, AppData)
+```
+
+---
+
+# Recap
+
+- Setup same as a basic Flask `app`, then wrap in `flask_restplus.Api`
+- Define namespaces to group resources and collections
+- Define resources and their operations
+- Define models which specify the format of any data you will send or receive
+- Add documentation, specify return codes, etc.
+
+===
+
+## Alternatives
+
+- Standard seems to be to generate from a spec
+- Easier for me to write server and have server give the spec
+- (Though I concede that will have advantages - better designed API)
+- https://github.com/zalando/connexion seems to do it the other way if you prefer
+
+===
+
+## Testing
+
+- Builds directly on flask
+- Easy to test: http://flask.pocoo.org/docs/0.11/testing/#the-testing-skeleton
 
 ---
 
@@ -110,14 +275,68 @@ http://127.0.0.1:5000
 
 ===
 
-- Prefix
-- Expose schema
-- Expect
+## Use an API Prefix
+
+##### https://github.com/noirbizarre/flask-restplus/issues/210
+
+```python
+app = Flask(__name__)
+
+# Use a non-empty 'prefix' (becomes swagger 'basePath') for
+# interop reasons - if it's empty then the basePath is '/',
+# which with an API enpoint appended becomes '//<endpoint>'
+# (because they are always prefixed themselves with a
+# '/') and that is not equivalent to '/<endpoint'.
+api = Api(app,
+          version='1.0',
+          title='Simple Datastore API',
+          description='A simple REST datastore API',
+          prefix='/api')
+```
+
+Note:
+- This is the actual code
+- Raised an issue, but no traction.
+- Probably never a problem on a real system.
 
 ===
 
-- Use Flask-RESTPlus
-- Easy to test: http://flask.pocoo.org/docs/0.11/testing/#the-testing-skeleton
+## Expose the schema manually
+
+```
+schema_ns = api.namespace('schema',
+                          description="This API's schema operations")
+
+@schema_ns.route('')
+class SchemaResource(Resource):
+    """Resource allowing access to the
+       OpenAPI schema for the entire API."""
+
+    def get(self):
+        """
+        Return the OpenAPI schema.
+        """
+        return api.__schema__
+```
+
+===
+
+## Input Validation isn't Enabled by Default
+
+Either enable it per-operation:
+
+```
+@api.expect(AppData, validate=True)
+@api.response(204, 'App successfully updated.')
+def put(self, appid):
+```
+
+Or enable it globally:
+
+```
+# Globally enable input validation.
+app.config['RESTPLUS_VALIDATE'] = True
+```
 
 ---
 
@@ -131,6 +350,21 @@ http://127.0.0.1:5000
 ===
 
 # Use pyswagger
+
+---
+
+# Gotchas
+
+===
+
+- Testing
+- How to specify endpoints
+- Security
+
+===
+
+- Use Flask-RESTPlus
+- Easy to test: http://flask.pocoo.org/docs/0.11/testing/#the-testing-skeleton
 
 ---
 
