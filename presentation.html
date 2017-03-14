@@ -39,7 +39,331 @@
 		<div class="reveal">
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
-				<section data-markdown="slides.md"
+
+				<section data-markdown="intro.md"
+					data-separator-vertical="^\r?\n===\r?\n$">
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+# DEMO
+
+- Simple Datastore
+- Exposes SwaggerUI
+
+http://127.0.0.1:9000
+
+https://github.com/olipratt/microstore
+						</script>
+					</section>
+					<section>
+						<iframe style="background: #FFFFFF" class="stretch"
+						        src="http://127.0.0.1:9000">
+						</iframe>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Setup</h2>
+						<pre><code class="hljs python" data-trim>
+from flask import Flask, request
+from flask_restplus import Resource, Api, fields
+
+app = Flask(__name__)
+
+api = Api(app,
+          version='1.0',
+          title='Simple Datastore API',
+          description='A simple REST datastore API',
+          prefix='/api')
+
+# This collects the API operations into named groups under a root URL.
+apps_ns = api.namespace('apps', description='App data related operations')
+schema_ns = api.namespace('schema', description="This API's schema operations")
+						</code></pre>
+						<iframe style="background: #FFFFFF" class="stretch"
+						        src="http://127.0.0.1:9000">
+						</iframe>
+						<aside class="notes">
+						<ul>
+							<li>Flask stuff is standard for flask app</li>
+							<li>The point is that everything you see is configured by you in the code.</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>Simple Get</h2>
+						<pre><code class="hljs python" data-trim>
+schema_ns = api.namespace('schema',
+                          description="This API's schema operations")
+
+@schema_ns.route('')
+class SchemaResource(Resource):
+    """Resource allowing access to the
+       OpenAPI schema for the entire API."""
+
+    def get(self):
+        """
+        Return the OpenAPI schema.
+        """
+        return api.__schema__
+						</code></pre>
+						<iframe style="background: #FFFFFF" class="stretch"
+						        src="http://127.0.0.1:9000">
+						</iframe>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>Collection</h2>
+						<pre><code class="hljs python" data-trim>
+@apps_ns.route('')
+class AppsCollection(Resource):
+    """ Collection resource containing all apps. """
+
+    @api.marshal_list_with(AppName)
+    def get(self):
+        """
+        Returns the list of apps.
+        """
+        log.debug("Listing all apps")
+        apps_list = kvstore.keys(KVSTORE_NAMESPACE_APPS)
+        return [{'name': app_name} for app_name in apps_list]
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>PUT</h2>
+						<pre class="stretch"><code class="hljs python" data-trim>
+@apps_ns.route('/&ltappid>')
+@api.response(404, 'App not found.')
+class AppsResource(Resource):
+    """ Individual resources representing an app. """
+
+    @api.expect(AppData, validate=True)
+    @api.response(204, 'App successfully updated.')
+    def put(self, appid):
+        """
+        Updates an app.
+        Use this method to add, or change the data stored for, an app.
+        * Send a JSON object with the new data in the request body.
+        ```
+        {
+          "data": {
+            "any_data": "you_like_here"
+          }
+        }
+        ```
+        * Specify the name of the app to modify in the request URL path.
+        """
+        kvstore.store(KVSTORE_NAMESPACE_APPS,
+                      appid,
+                      request.get_json()['data'])
+        return None, 204
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>Models</h2>
+						<pre><code class="hljs python" data-trim>
+# Specifications of the objects accepted/returned by the API.
+AppName = api.model('App name', {
+    'name': fields.String(required=True,
+                          description='App name',
+                          example="My App"),
+})
+
+AppData = api.model('App data', {
+    'data': fields.Raw(required=True,
+                       description='App data',
+                       example={"any_data": "you_like_goes_here"}),
+})
+
+AppWithData = api.inherit('App with data', AppName, AppData)
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section data-markdown="middle.md"
+					data-separator-vertical="^\r?\n===\r?\n$">
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+# DEMO
+
+- Simple Playing Card Dealer
+- Exposes SwaggerUI
+
+http://127.0.0.1:9001
+
+https://github.com/olipratt/microcarddeck
+						</script>
+					</section>
+					<section>
+						<iframe style="background: #FFFFFF" class="stretch"
+						        src="http://127.0.0.1:9001">
+						</iframe>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>App</h2>
+						<pre class="stretch"><code class="hljs python" data-trim>
+from pyswagger import App, Security
+from pyswagger.contrib.client.requests import Client
+
+
+class DeckStore:
+    """Definition of the datastore which client connections are made to."""
+
+    def __init__(self, schema_path):
+        """Create a deck store.
+
+        :param schema_path: The url or file path of the swagger schema of the
+                            datastore to use.
+        :type schema_path: str.
+        """
+        # Load Swagger schema.
+        self._app = App.create(schema_path)
+
+        # Expose references to API operations that will be used.
+        # These are objects that when called return correctly formatted
+        # requests for client instances to send on to the server.
+        # There are two ways to reference these - by name in the schema, or by
+        # path within the API and operation - both are shown for completeness.
+        # self.get_decks_list = self._app.op['get_apps_collection']
+        self.get_decks_list = self._app.s('apps').get
+        # self.put_deck_data = self._app.op['put_apps_resource']
+        self.put_deck_data = self._app.s('apps/{appid}').put
+        # self.get_deck = self._app.op['get_apps_resource']
+        self.get_deck = self._app.s('apps/{appid}').get
+        # self.delete_deck = self._app.op['delete_apps_resource']
+        self.delete_deck = self._app.s('apps/{appid}').delete
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>Client</h2>
+						<pre class="stretch"><code class="hljs python" data-trim>
+class DeckStoreClient:
+
+    def __init__(self, deck_store):
+        """Create a new client to access the deck store.
+        :param deck_store: The definition of the store to connect to.
+        :type deck_store: DeckStore.
+        """
+        self._deck_store = deck_store
+
+        # Create a client which will send requests
+        self._client = Client(Security(self._deck_store))
+
+    def new_deck(self):
+        """Create a new deck, and return its ID."""
+        # Just give each deck a truncated integer UUID as an ID for now.
+        # Use uuid4 as that's random, and hopefully won't collide in test use
+        # which is all this is really for.
+        deck_id = uuid.uuid4().int % 100000000
+        log.debug("Creating new deck with ID: %r", deck_id)
+
+        prepared_request = self._deck_store.put_deck_data(appid=deck_id,
+                                                          payload={"data": {}})
+        resp = self._client.request(prepared_request)
+        assert resp.status == 204
+        log.debug("Deck created successfully")
+
+        return deck_id
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+					<section>
+						<h2>Requests</h2>
+						<pre><code class="hljs python" data-trim>
+????
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Testing</h2>
+						<pre class="stretch"><code class="hljs python" data-trim>
+import unittest
+import json
+import responses
+import re
+
+import deckserver
+
+DATASTORE_SCHEMA_PATH = 'test_schema.json'
+DATASTORE_URL_BASE = 'http://127.0.0.1:5000/api'
+CONTENT_TYPE_JSON = 'application/json'
+
+class MicroCardDeckTestCase(unittest.TestCase):
+
+    def setUp(self):
+        # Disable the error catching during request handling so that you get
+        # better error reports.
+        deckserver.app.config['TESTING'] = True
+
+        deckserver.assign_data_store(DATASTORE_SCHEMA_PATH)
+        self.app = deckserver.app.test_client()
+
+    @responses.activate
+    def test_decks_collection_create(self):
+        url_re = re.compile(DATASTORE_URL_BASE + r'/apps/\d+')
+        responses.add(responses.PUT, url_re,
+                      body=None, status=204,
+                      content_type=CONTENT_TYPE_JSON)
+
+        rv = self.app.post(deckserver.API_URL_PREFIX + '/decks')
+        self.assertEqual(rv.status_code, 201)
+        response_data = json.loads(rv.data.decode())
+        self.assertIsInstance(response_data.get("id"), int)
+						</code></pre>
+						<aside class="notes">
+						<ul>
+							<li>???</li>
+						</ul>
+						</aside>
+					</section>
+				</section>
+
+
+				<section data-markdown="end.md"
 					data-separator-vertical="^\r?\n===\r?\n$">
 				</section>
 
@@ -78,6 +402,9 @@
 				history: true,
 				center: true,
 				previewLinks: true,
+
+				width: 1280,
+				height: 900,
 
 				transition: 'convex', // none/fade/slide/convex/concave/zoom
 
