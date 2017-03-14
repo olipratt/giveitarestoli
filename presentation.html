@@ -96,13 +96,11 @@ schema_ns = api.namespace('schema', description="This API's schema operations")
 					<section>
 						<h2>Simple Get</h2>
 						<pre><code class="hljs python" data-trim>
-schema_ns = api.namespace('schema',
-                          description="This API's schema operations")
+schema_ns = api.namespace('schema', description="This API's schema operations")
 
 @schema_ns.route('')
 class SchemaResource(Resource):
-    """Resource allowing access to the
-       OpenAPI schema for the entire API."""
+    """Resource allowing access to the OpenAPI schema for the entire API."""
 
     def get(self):
         """
@@ -135,6 +133,9 @@ class AppsCollection(Resource):
         apps_list = kvstore.keys(KVSTORE_NAMESPACE_APPS)
         return [{'name': app_name} for app_name in apps_list]
 						</code></pre>
+						<iframe style="background: #FFFFFF" class="stretch"
+						        src="http://127.0.0.1:9000">
+						</iframe>
 						<aside class="notes">
 						<ul>
 							<li>???</li>
@@ -220,7 +221,10 @@ https://github.com/olipratt/microcarddeck
 						</script>
 					</section>
 					<section>
-						<iframe style="background: #FFFFFF" class="stretch"
+						<iframe style="background: #FFFFFF; width: 100%; height: 50vh"
+						        src="http://127.0.0.1:9000">
+						</iframe>
+						<iframe style="background: #FFFFFF; width: 100%; height: 50vh"
 						        src="http://127.0.0.1:9001">
 						</iframe>
 					</section>
@@ -230,13 +234,10 @@ https://github.com/olipratt/microcarddeck
 					<section>
 						<h2>App</h2>
 						<pre class="stretch"><code class="hljs python" data-trim>
-from pyswagger import App, Security
-from pyswagger.contrib.client.requests import Client
-
+from pyswagger import App
 
 class DeckStore:
     """Definition of the datastore which client connections are made to."""
-
     def __init__(self, schema_path):
         """Create a deck store.
 
@@ -270,8 +271,10 @@ class DeckStore:
 					<section>
 						<h2>Client</h2>
 						<pre class="stretch"><code class="hljs python" data-trim>
-class DeckStoreClient:
+from pyswagger import Security
+from pyswagger.contrib.client.requests import Client
 
+class DeckStoreClient:
     def __init__(self, deck_store):
         """Create a new client to access the deck store.
         :param deck_store: The definition of the store to connect to.
@@ -294,20 +297,7 @@ class DeckStoreClient:
                                                           payload={"data": {}})
         resp = self._client.request(prepared_request)
         assert resp.status == 204
-        log.debug("Deck created successfully")
-
         return deck_id
-						</code></pre>
-						<aside class="notes">
-						<ul>
-							<li>???</li>
-						</ul>
-						</aside>
-					</section>
-					<section>
-						<h2>Requests</h2>
-						<pre><code class="hljs python" data-trim>
-????
 						</code></pre>
 						<aside class="notes">
 						<ul>
@@ -321,11 +311,7 @@ class DeckStoreClient:
 					<section>
 						<h2>Testing</h2>
 						<pre class="stretch"><code class="hljs python" data-trim>
-import unittest
-import json
-import responses
-import re
-
+import unittest, json, responses, re
 import deckserver
 
 DATASTORE_SCHEMA_PATH = 'test_schema.json'
@@ -333,7 +319,6 @@ DATASTORE_URL_BASE = 'http://127.0.0.1:5000/api'
 CONTENT_TYPE_JSON = 'application/json'
 
 class MicroCardDeckTestCase(unittest.TestCase):
-
     def setUp(self):
         # Disable the error catching during request handling so that you get
         # better error reports.

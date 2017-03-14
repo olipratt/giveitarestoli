@@ -5,6 +5,7 @@
 ## Alternatives
 
 - `Bravado` maintained by yahoo.
+    - Uses `twisted`.
 
 ---
 
@@ -46,6 +47,8 @@ client = Client(Security(schema_path))
 ---
 
 # Recap Overall
+
+- Docker next step
 
 ---
 

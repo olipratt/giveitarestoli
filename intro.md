@@ -12,26 +12,32 @@ This is to me
 
 # Basic Intro to REST
 
-- You make a HTTP request
+- Different things to different people
+- Good way to start an internet argument
+- I'm going to butcher it here
+
+===
+
+## For Our Purposes...
+
+- You make an HTTP request
     - (maybe sending some JSON)
 - Get back JSON
 - ...
 - Profit
-- Different things to different people
-- Cause of arguments
 
 ===
 
-# Basic Intro to REST
+## More Basics
 
+- Stateless
 - Resources and collections
+- Always nouns
 - Always plural
 
 ---
 
-# Basic Intro to REST
-
-## Verbs
+## Basic Intro to REST -  Verbs
 
 - GET
 - POST
@@ -45,21 +51,44 @@ This is to me
 
 ### GET
 - Get data
+- What your web browser does
+
+```
+GET /api/kittens/1
+
+200
+
+{
+    "name": "Boris",
+    "fuzzy": true
+}
+```
 
 ===
 
 ## Verbs
 
 ### PUT/POST
-- Create / Update / Replace / Modify
-- This could be a table.
+Create / Update / Replace
+
+|                | Create | Update/Replace
+|----------------|-----|-----
+|Server Names    | `POST /kittens` | `PUT /kittens/12345`
+|Client Names    | `PUT /kittens/boris` | `PUT /kittens/boris`
+
 
 ===
 
 ## Verbs
 
 ### DELETE
-- Delete something
+Delete something
+
+```
+DELETE /api/kittens/boris
+
+200
+```
 
 ===
 
@@ -68,15 +97,20 @@ This is to me
 ### PATCH
 - Change something
 - You define how
-- Don't care for this
+- Don't care for this talk
 
 ---
 
-# That skips a lot
+# That skips a lot...
 
 ===
 
-- Discoverability: https://vimeo.com/20781278
+# ...Like
+
+- Discoverability
+    - HATEOAS
+    - https://vimeo.com/20781278
+- Idempotency
 
 ---
 
@@ -96,5 +130,5 @@ This is to me
 ## It's a UI
 
 - SwaggerUI
-- Standard demo is [here](http://petstore.swagger.io/) *MAYBE SKIP*
+- Standard demo is of a petstore: http://petstore.swagger.io/
 - Lets you try out an API in your browser
