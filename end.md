@@ -36,15 +36,12 @@ client = Client(Security(App(schema_path)))
 
 ===
 
-## Specifying Endpoints
+## Documentation
 
-- There are a couple of ways of doing it.
-
----
-
-# Recap Overall
-
-- Docker next step
+- Not great - esp. compared to Flask-RESTPlus
+- I've spent a lot of time reading the source of the project
+- Not particularly pythonic - e.g. the `App.s` operation
+- But it does seem solid and does fully implement the specs
 
 ---
 
@@ -54,8 +51,19 @@ Go here for links:
 
 http://giveitarest.olipratt.co.uk
 
+Including:
+
+- Source code for microstore and deckstore apps - copy-paste freely :)
+- Articles on writing the apps
+- Link to these slides
+- More general REST API notes
+- Article on running the apps in containers and joining them together with `docker-compose`
+    - App repositories contain `Dockerfile`s
+
 ---
 
-# Plug
+# Plug!
 
-- Hypothesis testing
+- https://github.com/olipratt/swagger-conformance
+- Combine `pyswagger` and `hypothesis` to fully test and API
+- Barely works but check it out if interested

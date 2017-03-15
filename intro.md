@@ -1,7 +1,7 @@
 # Give it a REST Oli...
 
 ### Agenda
-- Basic Intro to REST
+- Basic Intro to REST APIs
 - Simple Server
 - Simple Client
 
@@ -10,9 +10,9 @@ Note:
 - Refresh the presentation
 ---
 - I saw swaggerUI in company talks
-- Read into producing one, going to share how with you
-- Idea is you come away with knowledge and code allowing you to add Swagger UI to your tools/programs
-- I think they are really good because they let you explore an API in your browser, but not used one in a real application yet
+- Going to share how with you
+- You come away with knowledge and code
+- I think they are really good because...
 - But we'll look at one shortly, for now...
 
 ---
@@ -67,19 +67,19 @@ Note:
 - `GET`
 - `POST`
 - `PUT`
-- `PATCH`
 - `DELETE`
+- `PATCH`
 
-Notes:
+Note:
 - So you know about resources and collections - there are these 5 main things you can do to them.
 
 ===
 
-## Verbs:  GET
+## Verbs:  `GET`
 - Get data
 - What your web browser does
 
-GET a collection:
+`GET` a collection:
 
 ```
 GET /api/kittens
@@ -88,7 +88,7 @@ GET /api/kittens
 [1, 2, 3, 4]
 ```
 
-Get a resource:
+`GET` a resource:
 
 ```
 GET /api/kittens/1
@@ -105,7 +105,7 @@ Note:
 
 ===
 
-## Verbs: PUT/POST
+## Verbs: `PUT`/`POST`
 
 - Create / Update / Replace
 - Different depending on who names things
@@ -118,7 +118,7 @@ Note:
 
 ===
 
-## Verbs:  DELETE
+## Verbs: `DELETE`
 Delete something
 
 ```
@@ -129,7 +129,7 @@ DELETE /api/kittens/boris
 
 ===
 
-## Verbs: PATCH
+## Verbs: `PATCH`
 
 - Change something
 - You define how
