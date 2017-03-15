@@ -6,56 +6,92 @@
 - Simple Client
 
 Note:
-This is to me
+- Start two command prompts and both servers (ports 9000 and 9001)
+- Refresh the presentation
+---
+- I saw swaggerUI in company talks
+- Read into producing one, going to share how with you
+- Idea is you come away with knowledge and code allowing you to add Swagger UI to your tools/programs
+- I think they are really good because they let you explore an API in your browser, but not used one in a real application yet
+- But we'll look at one shortly, for now...
 
 ---
 
-# Basic Intro to REST
+# Basic Intro to REST APIs
 
+- Should be well defined
+- Google, Microsoft, etc. have design guides
 - Different things to different people
 - Good way to start an internet argument
 - I'm going to butcher it here
+
+Note:
+- There are definitions but still seems controversial
+- You can go and read about them if you want specifics
+- I'm just going to give a really quick 'what you need to know now' - *not how to build a perfect one*
 
 ===
 
 ## For Our Purposes...
 
-- You make an HTTP request
+- You make an HTTP request to e.g. `http://example.com/orders`
     - (maybe sending some JSON)
 - Get back JSON
 - ...
 - Profit
 
+Note:
+- Assuming you all know what HTTP is (what you use to view web pages) and JSON (hope you know Python, but you can think of it as a Python dictionary/lists and basic types like ints / strings)
+
 ===
 
-## More Basics
+## More REST API Basics
 
+- Client/Server
 - Stateless
-- Resources and collections
-- Always nouns
-- Always plural
+- *Resources* and *collections*
+    - `/orders/123`
+    - `/orders`
+- Always named with nouns
+- Collections always plural
+
+Note:
+- Communication is stateless between requests (each request contains all the data needed to handle the request)
+- Two main endpoint types - resources and collections
 
 ---
 
+
 ## Basic Intro to REST -  Verbs
 
-- GET
-- POST
-- PUT
-- PATCH
-- DELETE
+- `GET`
+- `POST`
+- `PUT`
+- `PATCH`
+- `DELETE`
+
+Notes:
+- So you know about resources and collections - there are these 5 main things you can do to them.
 
 ===
 
-## Verbs
-
-### GET
+## Verbs:  GET
 - Get data
 - What your web browser does
 
+GET a collection:
+
+```
+GET /api/kittens
+200
+
+[1, 2, 3, 4]
+```
+
+Get a resource:
+
 ```
 GET /api/kittens/1
-
 200
 
 {
@@ -64,40 +100,41 @@ GET /api/kittens/1
 }
 ```
 
+Note:
+- Perform a GET
+
 ===
 
-## Verbs
+## Verbs: PUT/POST
 
-### PUT/POST
-Create / Update / Replace
+- Create / Update / Replace
+- Different depending on who names things
 
 |                | Create | Update/Replace
 |----------------|-----|-----
-|Server Names    | `POST /kittens` | `PUT /kittens/12345`
-|Client Names    | `PUT /kittens/boris` | `PUT /kittens/boris`
+|**Server Names**    | `POST /orders` | `PUT /orders/12345`
+|**Client Names**    | `PUT  /kittens/boris` | `PUT /kittens/boris`
 
 
 ===
 
-## Verbs
-
-### DELETE
+## Verbs:  DELETE
 Delete something
 
 ```
 DELETE /api/kittens/boris
 
-200
+204
 ```
 
 ===
 
-## Verbs
+## Verbs: PATCH
 
-### PATCH
 - Change something
 - You define how
 - Don't care for this talk
+- Just `GET` data, change it yourself, then `PUT` it back
 
 ---
 
@@ -111,10 +148,13 @@ DELETE /api/kittens/boris
     - HATEOAS
     - https://vimeo.com/20781278
 - Idempotency
+- [Best practices](http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api)
 
 ---
 
 # What is Swagger?
+
+Two things
 
 ===
 

@@ -50,7 +50,7 @@
 # DEMO
 
 - Simple Datastore
-- Exposes SwaggerUI
+- Exposes SwaggerUI web page
 
 http://127.0.0.1:9000
 
@@ -61,6 +61,13 @@ https://github.com/olipratt/microstore
 						<iframe style="background: #FFFFFF" class="stretch"
 						        src="http://127.0.0.1:9000">
 						</iframe>
+						<aside class="notes">
+						<ul>
+							<li>Click 'List Operations'</li>
+							<li>The point is that everything you see is configured by you in the code.</li>
+							<li>Can explore the API entirely and test it out</li>
+						</ul>
+						</aside>
 					</section>
 				</section>
 
@@ -88,6 +95,7 @@ schema_ns = api.namespace('schema', description="This API's schema operations")
 						</iframe>
 						<aside class="notes">
 						<ul>
+							<li>To create that API I used Flask and Flask-RESTPlus</li>
 							<li>Flask stuff is standard for flask app</li>
 							<li>The point is that everything you see is configured by you in the code.</li>
 						</ul>
@@ -113,7 +121,10 @@ class SchemaResource(Resource):
 						</iframe>
 						<aside class="notes">
 						<ul>
-							<li>???</li>
+							<li>Define a resource on the namespace plus nothing</li>
+							<li>Define a get method on it which maps to the GET verb</li>
+							<li>Normal docstrings provide UI documentation</li>
+							<li>So that was a resouce, lets look at a collection...</li>
 						</ul>
 						</aside>
 					</section>

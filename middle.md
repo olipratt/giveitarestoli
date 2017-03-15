@@ -10,7 +10,7 @@
 
 ## Alternatives
 
-- Standard seems to be to generate from a spec
+- Standard seems to be to generate code from an OpenAPI spec
 - Easier for me to write server and have server give the spec
 - (Though I concede that will have advantages - better designed API)
 - https://github.com/zalando/connexion seems to do it the other way if you prefer
@@ -98,6 +98,8 @@ app.config['RESTPLUS_VALIDATE'] = True
 
 ===
 
+## How will we do it?
+
 - Standard seems to be code generation
 - That sucks, just want to point client at a server
 
@@ -105,6 +107,6 @@ app.config['RESTPLUS_VALIDATE'] = True
 
 # Use pyswagger
 
-- Other alternatives like bravado, but needs twisted
+- Other alternatives like `bravado`, but needs `twisted`
 - Not so well documented, but does fully implement/adhere to specs
 - Active
