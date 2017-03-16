@@ -12,7 +12,7 @@ Note:
 - I saw swaggerUI in company talks
 - Going to share how with you
 - You come away with knowledge and code
-- I think they are really good because...
+- Warning of puns :( Also Qs at end.
 - But we'll look at one shortly, for now...
 
 ---
@@ -36,7 +36,7 @@ Note:
 
 - You make an HTTP request to e.g. `http://example.com/orders`
     - (maybe sending some JSON)
-- Get back JSON
+- Get back return code (and maybe JSON)
 - ...
 - Profit
 
